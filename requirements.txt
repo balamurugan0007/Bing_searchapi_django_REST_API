@@ -1,6 +1,7 @@
-django-4.1
+django
 BeautifulSoup4
 pillow
 requests
-gunicorn-21.2.0
+gunicorn
 rest_framework
+pip
