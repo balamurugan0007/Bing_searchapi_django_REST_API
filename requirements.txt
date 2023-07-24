@@ -1,5 +1,5 @@
 django
-BeautifulSoup
+BeautifulSoup4
 pillow
 requests
 gunicorn
