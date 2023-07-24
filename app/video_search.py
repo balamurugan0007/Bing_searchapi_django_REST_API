@@ -12,9 +12,14 @@ def video(request):
         quary=image_search.validated_data['find']
         video_json_result=[]
         
-        def videos():
-            url=f"https://www.bing.com/videos/search?q={quary}"
-            response=requests.get(url)
+        
+        def videos(quary):
+            base_url="https://www.bing.com/images/search"
+            params={'q':quary}
+            headers={"user-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
+    
+            
+            response=requests.get(base_url,params=params,headers=headers)
             soup=BeautifulSoup(response.content,'html.parser')
             vid=soup.find_all("div",class_="dg_u")
             vid_ref=soup.find_all("li",class_='item col')
@@ -40,29 +45,30 @@ def video(request):
       
                 video_result={
             "title":title,
-            "img":image,
+            "image":image,
             "views":views,
-            "video":vid_link
+            "video":vid_link,
+            "video_list":1
         }     
                 video_json_result.append(video_result)   
     
     
     #=================referance_videous ===================
             for j in vid_ref:
-                link=j.find('a')['href']
+                #link=j.find('a')['href']
                 title=j.find('strong').text
         #print(title)
         
                 video_ref={
-            "title":title,
-            "link":link
+            "ref_title":title,
+            #"link":link
         }
-                video_json_result.append(video_ref)
+                
         
         
         
     
-        videos()
+        videos(quary)
 
         return Response(video_json_result)
     return Response('Try another one ....!')

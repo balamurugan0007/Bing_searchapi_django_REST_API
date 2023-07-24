@@ -4,37 +4,42 @@ import requests
 import json
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
 from .models import search
 from .serializer import search_serializer
 
 
 
-@api_view(['post'])
+@api_view(['POST'])
 def searchs(request):
-    find=search_serializer(data=request.data) 
+    find=search_serializer(data=request.data)
+    print(find) 
     
    
     if find.is_valid():
-        search_quary=find.validated_data['find']
+        query=find.validated_data['find']
         search_response=[]
         
         
-        def search():
-            url = f"https://www.bing.com/search?q={search_quary}"
-            response=requests.get(url)
-            soup=BeautifulSoup(response.text,"html.parser")
-            result=soup.find_all('li', class_='b_algo')
-            for results in result:
-                title = results.find('h2').text
-                link = results.find('a')['href']
-    
-    
-    #des=results.find('div',class_='Z26q7c UK95Uc')
-                description = results.find("p").text
+        def search(query):
+            base_url = 'https://www.bing.com/search'
+            params = {'q': query}
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
+
+            response = requests.get(base_url, params=params, headers=headers)
+            soup = BeautifulSoup(response.text, 'html.parser')
+
+    # Process the search results
+            results = soup.find_all('li', class_='b_algo')
+
+            for result in results:
+                title = result.find('h2').text
+                url = result.find('a')['href']
+                description = result.find('p').text
     
                 search_result={
             "title":title,
-            "link":link,
+            "link":url,
             "description":description
         }
         
@@ -42,7 +47,7 @@ def searchs(request):
             
         
         
-        search()
+        search(query)
        
         if search_response=="":
             return Response('sorry your search will not be identifyed.please try another one ')
